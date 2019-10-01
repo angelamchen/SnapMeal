@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 @Service("ingredientService")
 public interface IngredientService {
 
-	public ResponseEntity<?> addIngredientText(String ingredientName, int userId);
+	public ResponseEntity<?> addIngredientText(String ingredientName, String userId);
 
-	public ResponseEntity<?> getIngredientByName(String name);
+	public ResponseEntity<?> getIngredientByName(String ingredientName);
+
+	public ResponseEntity<?> getAllIngredientsByUser(String userId);
 }

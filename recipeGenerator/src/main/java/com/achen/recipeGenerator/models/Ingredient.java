@@ -3,7 +3,6 @@ package com.achen.recipeGenerator.models;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
@@ -11,31 +10,19 @@ import lombok.Data;
 @Data
 @Document(collection = "ingredients")
 public class Ingredient {
-	@Transient
-	public static final String SEQUENCE_NAME = "ingredient_sequence";
+	
+	String userId;
 	
 	@Id
-	long id;
-	
-	int userId;
-	
 	String ingredientName;
 	
 	Date date;
 
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public int getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(int userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
@@ -55,13 +42,9 @@ public class Ingredient {
 		this.date = date;
 	}
 
-	public static String getSequenceName() {
-		return SEQUENCE_NAME;
-	}
-
 	@Override
 	public String toString() {
-		return "Ingredient [id=" + id + ", userId=" + userId + ", ingredientName=" + ingredientName + ", date=" + date
+		return "Ingredient [userId=" + userId + ", ingredientName=" + ingredientName + ", date=" + date
 				+ "]";
 	}
 }
