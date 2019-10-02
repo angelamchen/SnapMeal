@@ -30,4 +30,9 @@ public class IngredientController {
 	public ResponseEntity<?> addIngredientsText(@PathVariable("ingredientName") String ingredientName, @PathVariable("userId") String userId) {
 		return ingredientService.addIngredientText(ingredientName, userId);
 	}
+	
+	@RequestMapping(value="/addIngredientImage/", method = RequestMethod.POST)
+	public ResponseEntity<?> addIngredientImage() {
+		return ingredientService.addIngredientfromImage();
+	}
 }

@@ -11,4 +11,7 @@ public interface IngredientService {
 	public ResponseEntity<?> getIngredientByName(String ingredientName);
 
 	public ResponseEntity<?> getAllIngredientsByUser(String userId);
+
+	public ResponseEntity<?> addIngredientfromImage();
+	
 }
