@@ -3,10 +3,12 @@ package com.achen.recipeGenerator.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.achen.recipeGenerator.models.ImageRequestDto;
 import com.achen.recipeGenerator.service.IngredientService;
 
 @RestController
@@ -26,13 +28,14 @@ public class IngredientController {
 		return ingredientService.getAllIngredientsByUser(userId);
 	}
 	
-	@RequestMapping(value="/addIngredientText/{ingredientName}/{userId}", method = RequestMethod.POST)
+	@RequestMapping(value="/addIngredientFromText/{ingredientName}/{userId}", method = RequestMethod.POST)
 	public ResponseEntity<?> addIngredientsText(@PathVariable("ingredientName") String ingredientName, @PathVariable("userId") String userId) {
-		return ingredientService.addIngredientText(ingredientName, userId);
+		return ingredientService.addIngredientFromText(ingredientName, userId);
 	}
 	
-	@RequestMapping(value="/addIngredientImage/", method = RequestMethod.POST)
-	public ResponseEntity<?> addIngredientImage() {
-		return ingredientService.addIngredientfromImage();
+	@RequestMapping(value="/addIngredientFromImage/", method = RequestMethod.POST)
+	public ResponseEntity<?> addIngredientImage(@RequestBody ImageRequestDto imageProp) {
+		System.out.println(imageProp);
+		return ingredientService.addIngredientFromImage(imageProp);
 	}
 }
