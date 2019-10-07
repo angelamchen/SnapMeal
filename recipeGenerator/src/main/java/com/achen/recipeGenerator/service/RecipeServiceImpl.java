@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.achen.recipeGenerator.models.Ingredient;
 import com.achen.recipeGenerator.models.Recipe;
 import com.achen.recipeGenerator.repositories.RecipeRepo;
 import com.google.gson.Gson;
@@ -18,6 +19,9 @@ public class RecipeServiceImpl implements RecipeService {
 	
 	@Autowired
 	RecipeRepo recipeRepo;
+	
+	@Autowired
+	IngredientService ingredientService;
 
 	@Override
 	public ResponseEntity<?> getRecipeFromTitle(String title) {
@@ -27,6 +31,12 @@ public class RecipeServiceImpl implements RecipeService {
 			return new ResponseEntity<>(String.format("Could not find: %s", title), HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(gson.toJson(recipes.get(0)), HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<?> getAvailableRecipes(String userId) {
+		ResponseEntity<?> response = ingredientService.getAllIngredientsByUser(userId);
+		return response;
 	}
 
 }
