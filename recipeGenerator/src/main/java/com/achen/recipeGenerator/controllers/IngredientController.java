@@ -14,7 +14,7 @@ import com.achen.recipeGenerator.service.IngredientService;
 @RestController
 @RequestMapping("/ingredients")
 public class IngredientController {
-
+	//TODO: better more informative response Entities
 	@Autowired
 	private IngredientService ingredientService;
 	
@@ -33,9 +33,8 @@ public class IngredientController {
 		return ingredientService.addIngredientFromText(ingredientName, userId);
 	}
 	
-	@RequestMapping(value="/addIngredientFromImage/", method = RequestMethod.POST)
-	public ResponseEntity<?> addIngredientImage(@RequestBody ImageRequestDto imageProp) {
-		System.out.println(imageProp);
-		return ingredientService.addIngredientFromImage(imageProp);
+	@RequestMapping(value="/addIngredientFromImage/{userId}", method = RequestMethod.POST)
+	public ResponseEntity<?> addIngredientImage(@RequestBody ImageRequestDto imageProp, @PathVariable String userId) {
+		return ingredientService.addIngredientFromImage(imageProp, userId);
 	}
 }

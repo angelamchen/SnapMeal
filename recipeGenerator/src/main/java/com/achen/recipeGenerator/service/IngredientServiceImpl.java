@@ -1,5 +1,6 @@
 package com.achen.recipeGenerator.service;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -76,15 +77,33 @@ public class IngredientServiceImpl implements IngredientService {
 	}
 	
 	@Override
-	public ResponseEntity<?> addIngredientFromImage(ImageRequestDto imageProp) {
+	public ResponseEntity<?> addIngredientFromImage(ImageRequestDto imageProp, String userId) {
 		byte[] imageBytes = Base64.getDecoder().decode(imageProp.getImageString());
 		
 		Model<Concept> foodModel = client.getDefaultModels().foodModel();
 
 		PredictRequest<Concept> request = foodModel.predict().withInputs(
 		        ClarifaiInput.forImage(imageBytes));
-		List<ClarifaiOutput<Concept>> result = request.executeSync().get();	
+		List<ClarifaiOutput<Concept>> results = request.executeSync().get();
 		
-		return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
+		List<Concept> retrievedIngredients = results.get(0).data();
+		List<Ingredient> validIngredients = new ArrayList<>();
+		
+		for (Concept ingredient : retrievedIngredients) {
+			if (ingredient.value() > 0.95) {
+				Date dateobj = new Date();
+
+				Ingredient newIngredient = new Ingredient();
+				newIngredient.setUserId(userId);
+				newIngredient.setDate(dateobj);
+				newIngredient.setIngredientName(ingredient.name());
+
+				// TODO: there should be no ingredient that is the same for each user. Right now if ingredient exists, it is overrided
+				ingredientRepo.save(newIngredient);
+				validIngredients.add(newIngredient);
+			}
+		}
+		
+		return new ResponseEntity<>(gson.toJson(validIngredients), HttpStatus.OK);
 	}
 }

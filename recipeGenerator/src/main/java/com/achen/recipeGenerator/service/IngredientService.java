@@ -14,5 +14,5 @@ public interface IngredientService {
 	
 	public ResponseEntity<?> addIngredientFromText(String ingredientName, String userId);
 
-	public ResponseEntity<?> addIngredientFromImage(ImageRequestDto imageProp);
+	public ResponseEntity<?> addIngredientFromImage(ImageRequestDto imageProp, String userId);
 }
