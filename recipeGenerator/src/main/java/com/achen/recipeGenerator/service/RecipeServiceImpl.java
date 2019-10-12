@@ -1,9 +1,7 @@
 package com.achen.recipeGenerator.service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,8 +43,17 @@ public class RecipeServiceImpl implements RecipeService {
 		List<Ingredient> userIngredients = ingredientService.getAllIngredientsByUser(userId);
 
 		for (Ingredient ingredient : userIngredients) {
+			List<Recipe> recipesWithIngredient = new ArrayList<>();
 			
-			List<Recipe> recipesWithIngredient = recipeRepo.findRecipesContainingIngredient(ingredient.getIngredientName());
+			try {
+				recipesWithIngredient = recipeRepo.findRecipesContainingIngredient(ingredient.getIngredientName());
+			} catch (Exception e) {
+				return recipesWithIngredient;
+			}
+		
+			if (recipesWithIngredient == null || recipesWithIngredient.isEmpty()) {
+				continue;
+			}
 
 			for (Recipe recipe : recipesWithIngredient) {
 				if (matchedRecipes.contains(recipe)) {

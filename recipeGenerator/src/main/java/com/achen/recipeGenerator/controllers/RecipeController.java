@@ -36,7 +36,7 @@ public class RecipeController {
 			List<Recipe> recipes = recipeService.getAvailableRecipes(userId);
 			return new ResponseEntity<>(gson.toJson(recipes.get(0)), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>(String.format("Could not find: %s", userId), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(String.format("Exceptio: %s, Class: %s , message: %s", e.toString(), e.getClass(), e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 	}
 
