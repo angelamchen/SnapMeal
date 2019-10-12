@@ -41,17 +41,11 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Override
 	public List<Recipe> getAvailableRecipes(String userId) {
-		// TODO: create a new Recipe object with important details, e.g. percentage
-		// match and stuff
 		List<Recipe> matchedRecipes = new ArrayList<>();
-		List<Ingredient> ingredients = ingredientService.getAllIngredientsByUser(userId);
+		List<Ingredient> userIngredients = ingredientService.getAllIngredientsByUser(userId);
 
-		// Put ingredients into a hashSet for quicker lookup
-		HashSet<String> ingredientsSet = ingredients.stream().map(i -> i.getIngredientName())
-				.collect(Collectors.toCollection(HashSet::new));
-
-		for (Ingredient ingredient : ingredients) {
-			// TODO: Find all recipes containing that ingredient
+		for (Ingredient ingredient : userIngredients) {
+			
 			List<Recipe> recipesWithIngredient = recipeRepo.findRecipesContainingIngredient(ingredient.getIngredientName());
 
 			for (Recipe recipe : recipesWithIngredient) {
@@ -59,13 +53,13 @@ public class RecipeServiceImpl implements RecipeService {
 					continue;
 				}
 
-				List<String> recipeIngredients = recipe.getCategories();
+				List<String> recipeIngredients = recipe.getIngredients();
 
 				int totalIngredients = recipeIngredients.size();
 				int matchedIngredients = 0;
 
-				for (String ingredientCategory : recipeIngredients) {
-					if (ingredientsSet.contains(ingredientCategory)) {
+				for (String recipeIngredient : recipeIngredients) {
+					if (doesRecipeContainIngredient(recipeIngredient, userIngredients)) {
 						matchedIngredients++;
 					}
 				}
@@ -78,5 +72,15 @@ public class RecipeServiceImpl implements RecipeService {
 		}
 		// TODO: create a new object that contains the ingredient matched percentage
 		return matchedRecipes;
+	}
+	
+	private boolean doesRecipeContainIngredient(String recipeIngredient, List<Ingredient> userIngredients) {
+		for (Ingredient ingredient : userIngredients) {
+			if (recipeIngredient.contains(ingredient.getIngredientName())) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

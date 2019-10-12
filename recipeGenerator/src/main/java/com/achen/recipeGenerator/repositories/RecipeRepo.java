@@ -15,6 +15,8 @@ public interface RecipeRepo extends MongoRepository<Recipe, String>{
 	@Query("{title: '?0'}")
 	List<Recipe> findAllByTitle(String title);
 	
+	@Query("{ ingredients: { $regex: '?0' } }")
 	List<Recipe> findRecipesContainingIngredient(String name);
+	
 
 }
