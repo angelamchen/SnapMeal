@@ -67,13 +67,9 @@ public class IngredientServiceImpl implements IngredientService {
 	}
 
 	@Override
-	public ResponseEntity<?> getAllIngredientsByUser(String userId) {
-		try {
+	public List<Ingredient> getAllIngredientsByUser(String userId) {
 			List<Ingredient> ingredients = ingredientRepo.findAllByUserId(userId);
-			return new ResponseEntity<>(gson.toJson(ingredients), HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(e.toString(), HttpStatus.BAD_REQUEST);
-		}
+			return ingredients;
 	}
 	
 	@Override
