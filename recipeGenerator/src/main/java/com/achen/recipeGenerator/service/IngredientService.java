@@ -18,4 +18,6 @@ public interface IngredientService {
 	public ResponseEntity<?> addIngredientFromText(String ingredientName, String userId);
 
 	public ResponseEntity<?> addIngredientFromImage(ImageRequestDto imageProp, String userId);
+
+	public List<Ingredient> findUserIngredientsByName(String ingredientName, String userId);
 }

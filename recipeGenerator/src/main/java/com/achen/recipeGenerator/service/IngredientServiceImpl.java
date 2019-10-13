@@ -35,16 +35,19 @@ public class IngredientServiceImpl implements IngredientService {
 
 	@Autowired
 	IngredientRepo ingredientRepo;
-	
-	// TODO: create a service that saves ingredients instead
 
 	// This should not be a response Entity...
 	@Override
 	public ResponseEntity<?> addIngredientFromText(String ingredientName, String userId) {
 		try {
-			Date dateobj = new Date();
 			
-			//TODO: first check if ingredient already exists
+			List<Ingredient> ingredient = findUserIngredientsByName(ingredientName, userId);
+			
+			if (!ingredient.isEmpty()) {
+				return new ResponseEntity<>("Ingredient already exists", HttpStatus.OK);
+			}
+			
+			Date dateobj = new Date();
 
 			Ingredient newIngredient = new Ingredient();
 			newIngredient.setIngredientName(ingredientName);
@@ -57,6 +60,13 @@ public class IngredientServiceImpl implements IngredientService {
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.toString(), HttpStatus.BAD_REQUEST);
 		}
+	}
+	
+	//TODO: implement add ingredient
+	
+	@Override
+	public List<Ingredient> findUserIngredientsByName(String ingredientName, String userId) {
+		return ingredientRepo.findByIngredientNameAndUserId(ingredientName, userId);
 	}
 
 	@Override

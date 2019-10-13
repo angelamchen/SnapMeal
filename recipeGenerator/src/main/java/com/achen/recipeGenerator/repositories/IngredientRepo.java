@@ -18,4 +18,7 @@ public interface IngredientRepo extends MongoRepository<Ingredient, String> {
 
 	@Query("{ userId : ?0 }")
 	List<Ingredient> findAllByUserId(String userId);
+
+	@Query("{ ingredientName : ?0 }, { userId : ?1 }")
+	List<Ingredient> findByIngredientNameAndUserId(String ingredientName, String userId);
 }
