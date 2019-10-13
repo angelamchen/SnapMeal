@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.achen.recipeGenerator.models.ImageRequestDto;
-import com.achen.recipeGenerator.models.Recipe;
+import com.achen.recipeGenerator.models.RecipeDto;
 import com.achen.recipeGenerator.service.RecipeService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -33,11 +33,16 @@ public class RecipeController {
 	@RequestMapping(value="/getAvailableRecipes/{userId}", method = RequestMethod.GET)
 	public ResponseEntity<?> getAvailableRecipes(@PathVariable String userId) {
 		try {
-			List<Recipe> recipes = recipeService.getAvailableRecipes(userId);
-			return new ResponseEntity<>(gson.toJson(recipes.get(0)), HttpStatus.OK);
+			List<RecipeDto> recipes = recipeService.getAvailableRecipes(userId);
+			return new ResponseEntity<>(gson.toJson(recipes), HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>(String.format("Exceptio: %s, Class: %s , message: %s", e.toString(), e.getClass(), e.getMessage()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(String.format("Exception: %s, Class: %s , message: %s", e.toString(), e.getClass(), e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	
+	@RequestMapping(value="/delete", method = RequestMethod.DELETE)
+	public String delete() {
+		String message = recipeService.deleteStuff();
+		return message;
+	}
 }

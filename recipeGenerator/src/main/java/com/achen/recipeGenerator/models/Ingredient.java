@@ -2,6 +2,7 @@ package com.achen.recipeGenerator.models;
 
 import java.util.Date;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,20 +12,14 @@ import lombok.Data;
 @Document(collection = "ingredients")
 public class Ingredient {
 	
-	String userId;
-	
 	@Id
+	ObjectId ingredientId;
+	
 	String ingredientName;
 	
+	String userId;
+	
 	Date date;
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
 
 	public String getIngredientName() {
 		return ingredientName;
@@ -32,6 +27,14 @@ public class Ingredient {
 
 	public void setIngredientName(String ingredientName) {
 		this.ingredientName = ingredientName;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public Date getDate() {
@@ -42,9 +45,5 @@ public class Ingredient {
 		this.date = date;
 	}
 
-	@Override
-	public String toString() {
-		return "Ingredient [userId=" + userId + ", ingredientName=" + ingredientName + ", date=" + date
-				+ "]";
-	}
+	
 }

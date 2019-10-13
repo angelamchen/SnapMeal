@@ -30,7 +30,7 @@ public class IngredientController {
 	@RequestMapping(value="/getAllIngredientsByUser/{userId}", method = RequestMethod.GET)
 	public ResponseEntity<?> getAllIngredientsByUser(@PathVariable String userId) {
 		List<Ingredient> ingredients = ingredientService.getAllIngredientsByUser(userId);
-		return new ResponseEntity<>(String.format("Ingredient %s saved", ingredients), HttpStatus.OK);
+		return new ResponseEntity<>(ingredients, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="/addIngredientFromText/{ingredientName}/{userId}", method = RequestMethod.POST)

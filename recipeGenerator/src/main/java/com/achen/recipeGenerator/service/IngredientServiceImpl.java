@@ -35,18 +35,22 @@ public class IngredientServiceImpl implements IngredientService {
 
 	@Autowired
 	IngredientRepo ingredientRepo;
+	
+	// TODO: create a service that saves ingredients instead
 
+	// This should not be a response Entity...
 	@Override
 	public ResponseEntity<?> addIngredientFromText(String ingredientName, String userId) {
 		try {
 			Date dateobj = new Date();
+			
+			//TODO: first check if ingredient already exists
 
 			Ingredient newIngredient = new Ingredient();
+			newIngredient.setIngredientName(ingredientName);
 			newIngredient.setUserId(userId);
 			newIngredient.setDate(dateobj);
-			newIngredient.setIngredientName(ingredientName);
 
-			// TODO: there should be no ingredient that is the same for each user. Right now if ingredient exists, it is overrided
 			ingredientRepo.save(newIngredient);
 
 			return new ResponseEntity<>(String.format("Ingredient %s saved", newIngredient), HttpStatus.OK);
@@ -90,9 +94,9 @@ public class IngredientServiceImpl implements IngredientService {
 				Date dateobj = new Date();
 
 				Ingredient newIngredient = new Ingredient();
+				newIngredient.setIngredientName(ingredient.name());
 				newIngredient.setUserId(userId);
 				newIngredient.setDate(dateobj);
-				newIngredient.setIngredientName(ingredient.name());
 
 				// TODO: there should be no ingredient that is the same for each user. Right now if ingredient exists, it is overrided
 				ingredientRepo.save(newIngredient);

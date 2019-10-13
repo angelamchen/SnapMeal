@@ -13,9 +13,9 @@ import com.achen.recipeGenerator.models.Ingredient;
 @Transactional
 public interface IngredientRepo extends MongoRepository<Ingredient, String> {
 	
-	@Query("{ingredientName: '?0'}")
+	@Query("{ ingredientName : ?0 }")
 	List<Ingredient> findAllByName(String name);
 
-	@Query("{userId: '?0'}")
+	@Query("{ userId : ?0 }")
 	List<Ingredient> findAllByUserId(String userId);
 }

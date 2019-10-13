@@ -15,6 +15,13 @@ public interface RecipeRepo extends MongoRepository<Recipe, String>{
 	@Query("{ 'title': ?0 }")
 	List<Recipe> findAllByTitle(String title);
 	
-	@Query("{ 'ingredients' : { $regex: '.*?0.*' } }")
-	List<Recipe> findRecipesContainingIngredient(String name);
+	@Query("{ 'ingredients' : { $regex : ?0 } } ")
+	List<Recipe> findByIngredientsIn(String name);
+	
+	@Query("{ 'rating' : null } ")
+	List<Recipe> deleteBadRecipes();
+	
+	Long deleteRecipeByTitle(String title);   
 }
+
+
