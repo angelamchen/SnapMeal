@@ -10,5 +10,5 @@ import com.achen.recipeGenerator.models.Dto.RecipeDto;
 public interface RecipeService {
 	public List<RecipeDto> getAvailableRecipes(String userId);
 
-	public String deleteStuff();
+	public int cleanRecipes();
 }

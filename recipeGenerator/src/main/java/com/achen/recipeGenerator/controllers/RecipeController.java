@@ -36,8 +36,8 @@ public class RecipeController {
 	}
 	
 	@RequestMapping(value="/delete", method = RequestMethod.DELETE)
-	public String delete() {
-		String message = recipeService.deleteStuff();
-		return message;
+	public ResponseEntity<?> cleanRecipes() {
+		int deletedRecipes = recipeService.cleanRecipes();
+		return new ResponseEntity<>(String.format("%s recipes succesfully deleted", deletedRecipes), HttpStatus.OK);
 	}
 }
