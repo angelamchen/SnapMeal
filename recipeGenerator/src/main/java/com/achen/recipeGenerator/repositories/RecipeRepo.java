@@ -11,17 +11,12 @@ import com.achen.recipeGenerator.models.Recipe;
 
 @Repository
 @Transactional
-public interface RecipeRepo extends MongoRepository<Recipe, String>{
-	@Query("{ 'title': ?0 }")
-	List<Recipe> findAllByTitle(String title);
-	
+public interface RecipeRepo extends MongoRepository<Recipe, String> {
 	@Query("{ 'ingredients' : { $regex : ?0 } } ")
 	List<Recipe> findByIngredientsIn(String name);
+
+	Long deleteRecipeByTitle(String title);
 	
-	@Query("{ 'rating' : {$lt : 4} } ")
+	@Query("{ $or: [ { 'rating' : {$lt : 4} }, { 'rating' : null }, { 'sodium' : null } , { 'fat' : null }, { 'desc' : null }, { 'protein' : null } ] }")
 	List<Recipe> deleteBadRecipes();
-	
-	Long deleteRecipeByTitle(String title);   
 }
-
-

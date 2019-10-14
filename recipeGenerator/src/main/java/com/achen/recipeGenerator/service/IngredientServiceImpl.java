@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.achen.recipeGenerator.models.Ingredient;
-import com.achen.recipeGenerator.models.Dto.ImageRequestDto;
+import com.achen.recipeGenerator.models.dto.ImageRequestDto;
 import com.achen.recipeGenerator.repositories.IngredientRepo;
 
 import clarifai2.dto.prediction.Concept;
@@ -24,8 +24,7 @@ public class IngredientServiceImpl implements IngredientService {
 	ClarifaiRecognitionService clarifaiClient;
 
 	/**
-	 * Saves ingredients to the ingredient database, given that ingredient does not
-	 * already exists for user
+	 * Saves unique ingredients to the ingredient database
 	 * 
 	 * @param ingredientName Name of the ingredient to save
 	 * @param userId         userId of the user the ingredient belongs to
@@ -63,7 +62,8 @@ public class IngredientServiceImpl implements IngredientService {
 		List<Concept> retrievedIngredients = clarifaiClient.sendImageToClarifaiSync(imageBytes);
 
 		for (Concept ingredient : retrievedIngredients) {
-			// If the match is greater than 0.95 and ingredient does not already exist, add to db
+			// If the match is greater than 0.95 and ingredient does not already exist, add
+			// to db
 			if (ingredient.value() > MATCH_PERCENTAGE && !doesIngredientExist(ingredient.name(), userId)) {
 				Ingredient newIngredient = saveNewIngredient(ingredient.name(), userId);
 				validIngredients.add(newIngredient);
@@ -83,23 +83,23 @@ public class IngredientServiceImpl implements IngredientService {
 	public List<Ingredient> getAllIngredientsByUser(String userId) {
 		return ingredientRepo.findAllByUserId(userId);
 	}
-		
+
 	/**
 	 * Removes a users ingredient in the ingredient database
 	 * 
 	 * @param ingredientName name of the ingredient to be removed
-	 * @param userId id of the user ingredients belong to
+	 * @param userId         id of the user ingredients belong to
 	 * @return ingredient that was deleted
 	 * @throws Exception if ingredient does not exist
 	 */
 	@Override
 	public Ingredient removeIngredredientByNameAndUser(String ingredientName, String userId) throws Exception {
 		List<Ingredient> ingredients = ingredientRepo.findByIngredientNameAndUserId(ingredientName, userId);
-		
+
 		if (ingredients.isEmpty()) {
 			throw new Exception(String.format("Ingredient: %s for user: %s does not exist", ingredientName, userId));
 		}
-		
+
 		ingredientRepo.delete(ingredients.get(0));
 		return ingredients.get(0);
 	}
@@ -108,17 +108,17 @@ public class IngredientServiceImpl implements IngredientService {
 	 * Determines if a user ingredient exists
 	 * 
 	 * @param ingredientName name of the ingredient
-	 * @param userId id of the user ingredient belongs to
+	 * @param userId         id of the user ingredient belongs to
 	 * @return true, if only one ingredient exists
 	 * @return false, if ingredient does not exist, or if many exist
 	 */
 	@Override
 	public Boolean doesIngredientExist(String ingredientName, String userId) {
 		List<Ingredient> ingredients = ingredientRepo.findByIngredientNameAndUserId(ingredientName, userId);
-		
+
 		if (ingredients.size() != 1) {
 			return false;
-		} 
+		}
 		return true;
 	}
 }

@@ -1,20 +1,20 @@
-package com.achen.recipeGenerator.models.Dto;
+package com.achen.recipeGenerator.models.dto;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class RecipeDto {
-	ArrayList<String> directions; 
+	List<String> directions; 
 	int calories;
 	String desc;
 	String title;
-	ArrayList<String> ingredients;
+	List<String> ingredients;
 	double percentageMatch;
 	
-	public ArrayList<String> getDirections() {
+	public List<String> getDirections() {
 		return directions;
 	}
 	
-	public void setDirections(ArrayList<String> directions) {
+	public void setDirections(List<String> directions) {
 		this.directions = directions;
 	}
 	
@@ -42,11 +42,11 @@ public class RecipeDto {
 		this.title = title;
 	}
 	
-	public ArrayList<String> getIngredients() {
+	public List<String> getIngredients() {
 		return ingredients;
 	}
 	
-	public void setIngredients(ArrayList<String> ingredients) {
+	public void setIngredients(List<String> ingredients) {
 		this.ingredients = ingredients;
 	}
 	

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.achen.recipeGenerator.models.Ingredient;
 import com.achen.recipeGenerator.models.Recipe;
-import com.achen.recipeGenerator.models.Dto.RecipeDto;
+import com.achen.recipeGenerator.models.dto.RecipeDto;
 import com.achen.recipeGenerator.repositories.RecipeRepo;
 
 @Service("recipeService")
@@ -102,7 +102,7 @@ public class RecipeServiceImpl implements RecipeService {
 	 * @returns a double representing the percentage of ingredients for the recipe
 	 *          that the user has
 	 */
-	private double findMatchPercentage(List<String> recipeIngredients, List<Ingredient> userIngredients) {
+	public double findMatchPercentage(List<String> recipeIngredients, List<Ingredient> userIngredients) {
 		int matchedIngredients = 0;
 		int totalIngredients = recipeIngredients.size();
 
@@ -112,14 +112,14 @@ public class RecipeServiceImpl implements RecipeService {
 			}
 		}
 
-		return matchedIngredients / totalIngredients;
+		return (double) matchedIngredients / totalIngredients;
 	}
 
 	/**
 	 * Determines if the user has the specified ingredient passed in
 	 * 
 	 * @param recipeIngredient The ingredient in the recipe
-	 * @param userIngredients   List of all the ingredients the user has
+	 * @param userIngredients  List of all the ingredients the user has
 	 * 
 	 * @returns true if the user has the ingredient, false otherwise
 	 */

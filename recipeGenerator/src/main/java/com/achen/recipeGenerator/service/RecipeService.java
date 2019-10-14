@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.achen.recipeGenerator.models.Dto.RecipeDto;
+import com.achen.recipeGenerator.models.dto.RecipeDto;
 
 @Service("recipeService")
 public interface RecipeService {

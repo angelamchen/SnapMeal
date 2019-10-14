@@ -14,9 +14,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.achen.recipeGenerator.models.Ingredient;
-import com.achen.recipeGenerator.models.Dto.ImageRequestDto;
+import com.achen.recipeGenerator.models.dto.ImageRequestDto;
 import com.achen.recipeGenerator.service.IngredientService;
 
+/**
+ * 
+ * Handles request mapping for Ingredient related API calls
+ *
+ */
 @RestController
 @RequestMapping("/ingredients")
 public class IngredientController {
@@ -28,9 +33,11 @@ public class IngredientController {
 	public ResponseEntity<?> getAllIngredientsByUser(@RequestParam String userId) {
 		try {
 			List<Ingredient> ingredients = ingredientService.getAllIngredientsByUser(userId);
-			return new ResponseEntity<List<Ingredient>>(ingredients, HttpStatus.OK);
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(ingredients);
 		} catch (Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(e.getMessage());
 		}
 	}
 
@@ -40,16 +47,17 @@ public class IngredientController {
 			@PathVariable("userId") String userId) {
 		try {
 			if (ingredientService.doesIngredientExist(ingredientName, userId)) {
-				return new ResponseEntity<>(
-						String.format("Ingredient: %s for user: %s already exists", ingredientName, userId),
-						HttpStatus.BAD_REQUEST);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body(String.format("Ingredient: %s for user: %s already exists", ingredientName, userId));
 			}
 			
 			Ingredient ingredient = ingredientService.saveNewIngredient(ingredientName, userId);
-			return new ResponseEntity<Ingredient>(ingredient, HttpStatus.CREATED);
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(ingredient);
 			
 		} catch (Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(e.getMessage());
 		}
 	}
 
@@ -58,9 +66,11 @@ public class IngredientController {
 	public ResponseEntity<?> addIngredientImage(@RequestBody ImageRequestDto imageProp, @PathVariable String userId) {
 		try {
 			List<Ingredient> ingredients = ingredientService.saveIngredientFromImage(imageProp, userId);
-			return new ResponseEntity<List<Ingredient>>(ingredients, HttpStatus.CREATED);
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body(ingredients);
 		} catch (Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(e.getMessage());
 		}
 	}
 
@@ -69,9 +79,11 @@ public class IngredientController {
 	public ResponseEntity<?> removeIngredredientByName(@PathVariable String ingredientName, @PathVariable String userId) {
 		try {
 			Ingredient ingredient = ingredientService.removeIngredredientByNameAndUser(ingredientName, userId);
-			return new ResponseEntity<Ingredient>(ingredient, HttpStatus.OK);
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(ingredient);
 		} catch (Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(e.getMessage());
 		}
 	}
 }

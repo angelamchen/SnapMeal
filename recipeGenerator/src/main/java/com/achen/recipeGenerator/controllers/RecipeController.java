@@ -11,33 +11,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.achen.recipeGenerator.models.Dto.RecipeDto;
+import com.achen.recipeGenerator.models.dto.RecipeDto;
 import com.achen.recipeGenerator.service.RecipeService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 @RestController
 @RequestMapping("/recipes")
 public class RecipeController {
-	private Gson gson = new GsonBuilder().create();
-	
 	@Autowired
 	private RecipeService recipeService;
-	
+
 	@CrossOrigin
-	@RequestMapping(value="/{userId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{userId}", method = RequestMethod.GET)
 	public ResponseEntity<?> getAvailableRecipes(@PathVariable String userId) {
 		try {
 			List<RecipeDto> recipes = recipeService.getAvailableRecipes(userId);
-			return new ResponseEntity<>(gson.toJson(recipes), HttpStatus.OK);
+			
+			return ResponseEntity.status(HttpStatus.OK).body(recipes);
 		} catch (Exception e) {
-			return new ResponseEntity<>(String.format("Exception: %s, Class: %s , message: %s", e.toString(), e.getClass(), e.getMessage()), HttpStatus.BAD_REQUEST);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(e.getMessage());
 		}
 	}
-	
-	@RequestMapping(value="/delete", method = RequestMethod.DELETE)
+
+	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public ResponseEntity<?> cleanRecipes() {
-		int deletedRecipes = recipeService.cleanRecipes();
-		return new ResponseEntity<>(String.format("%s recipes succesfully deleted", deletedRecipes), HttpStatus.OK);
+		try {
+			int deletedRecipes = recipeService.cleanRecipes();
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(String.format("%s recipes succesfully deleted", deletedRecipes));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(e.getMessage());
+		}
 	}
 }

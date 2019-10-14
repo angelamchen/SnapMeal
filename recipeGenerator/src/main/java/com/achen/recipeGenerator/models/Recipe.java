@@ -1,6 +1,6 @@
 package com.achen.recipeGenerator.models;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -10,11 +10,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Recipe {
 	@Id
 	ObjectId recipeId;
-	ArrayList<String> directions; 
+	List<String> directions; 
 	String date;
-	ArrayList<String> categories;
+	List<String> categories;
 	String title;
-	ArrayList<String> ingredients;
+	List<String> ingredients;
 	
 	@Override
 	public String toString() {
@@ -27,10 +27,10 @@ public class Recipe {
 	public void setRecipeId(ObjectId recipeId) {
 		this.recipeId = recipeId;
 	}
-	public ArrayList<String> getDirections() {
+	public List<String> getDirections() {
 		return directions;
 	}
-	public void setDirections(ArrayList<String> directions) {
+	public void setDirections(List<String> directions) {
 		this.directions = directions;
 	}
 	public String getDate() {
@@ -39,10 +39,10 @@ public class Recipe {
 	public void setDate(String date) {
 		this.date = date;
 	}
-	public ArrayList<String> getCategories() {
+	public List<String> getCategories() {
 		return categories;
 	}
-	public void setCategories(ArrayList<String> categories) {
+	public void setCategories(List<String> categories) {
 		this.categories = categories;
 	}
 	public String getTitle() {
@@ -51,10 +51,10 @@ public class Recipe {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public ArrayList<String> getIngredients() {
+	public List<String> getIngredients() {
 		return ingredients;
 	}
-	public void setIngredients(ArrayList<String> ingredients) {
+	public void setIngredients(List<String> ingredients) {
 		this.ingredients = ingredients;
 	}
 
