@@ -75,40 +75,35 @@ public class RecipeServiceImpl implements RecipeService {
 
 			System.out.println(String.format("Total recipes found: %s", recipesWithIngredient.size()));
 
-//			for (Recipe recipe : recipesWithIngredient) {
-//				if (matchedRecipeNames.contains(recipe.getTitle())) {
-//					System.out.println("Recipe has already been found, searching for new recipes");
-//					continue;
-//				}
-//
-//				List<String> recipeIngredients = recipe.getIngredients();
-//
-//				int totalIngredients = recipeIngredients.size();
-//				System.out.println(String.format("Total ingredients found: %s", recipe.getTitle()));
-//				int matchedIngredients = 0;
-//
-//				for (String recipeIngredient : recipeIngredients) {
-//					if (doesRecipeContainIngredient(recipeIngredient, userIngredients)) {
-//						matchedIngredients++;
-//					}
-//				}
-//
-//				double percentageMatch = matchedIngredients / totalIngredients;
-//				if (percentageMatch > 0) {
-//					RecipeDto matchedRecipe = new RecipeDto();
-//					matchedRecipe.setTitle(recipe.getTitle());
-//					matchedRecipe.setDirections(recipe.getDirections());
-//					matchedRecipe.setIngredients(recipe.getIngredients());
-//					matchedRecipe.setPercentageMatch(percentageMatch);
-//
-//					matchedRecipes.add(matchedRecipe);
-//					matchedRecipeNames.add(recipe.getTitle());
-//				}
-//			}
-			RecipeDto matchedRecipe = new RecipeDto();
-			matchedRecipe.setDirections(recipesWithIngredient.get(0).getDirections());
-			matchedRecipe.setTitle(recipesWithIngredient.get(0).getTitle());
-			matchedRecipes.add(matchedRecipe);
+			for (Recipe recipe : recipesWithIngredient) {
+				if (matchedRecipeNames.contains(recipe.getTitle())) {
+					System.out.println("Recipe has already been found, searching for new recipes");
+					continue;
+				}
+
+				List<String> recipeIngredients = recipe.getIngredients();
+
+				int totalIngredients = recipeIngredients.size();
+				int matchedIngredients = 0;
+
+				for (String recipeIngredient : recipeIngredients) {
+					if (doesRecipeContainIngredient(recipeIngredient, userIngredients)) {
+						matchedIngredients++;
+					}
+				}
+
+				double percentageMatch = matchedIngredients / totalIngredients;
+				if (percentageMatch > 0.5) {
+					RecipeDto matchedRecipe = new RecipeDto();
+					matchedRecipe.setTitle(recipe.getTitle());
+					matchedRecipe.setDirections(recipe.getDirections());
+					matchedRecipe.setIngredients(recipe.getIngredients());
+					matchedRecipe.setPercentageMatch(percentageMatch);
+
+					matchedRecipes.add(matchedRecipe);
+					matchedRecipeNames.add(recipe.getTitle());
+				}
+			}
 		}
 		return matchedRecipes;
 	}

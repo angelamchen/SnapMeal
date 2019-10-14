@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,12 +26,8 @@ public class RecipeController {
 	@Autowired
 	private RecipeService recipeService;
 	
-	@RequestMapping(value="/getRecipeByTitle", method = RequestMethod.POST)
-	public ResponseEntity<?> getRecipeByTitle(@RequestBody ImageRequestDto recipeTitle) {
-		return recipeService.getRecipeFromTitle(recipeTitle.getImageString());
-	}
-	
-	@RequestMapping(value="/getAvailableRecipes/{userId}", method = RequestMethod.GET)
+	@CrossOrigin
+	@RequestMapping(value="/{userId}", method = RequestMethod.GET)
 	public ResponseEntity<?> getAvailableRecipes(@PathVariable String userId) {
 		try {
 			List<RecipeDto> recipes = recipeService.getAvailableRecipes(userId);

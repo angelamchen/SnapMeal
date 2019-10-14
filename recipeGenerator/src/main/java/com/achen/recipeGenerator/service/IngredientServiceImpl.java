@@ -41,7 +41,7 @@ public class IngredientServiceImpl implements IngredientService {
 	public ResponseEntity<?> addIngredientFromText(String ingredientName, String userId) {
 		try {
 			
-			List<Ingredient> ingredient = findUserIngredientsByName(ingredientName, userId);
+			List<Ingredient> ingredient = findUserIngredientsByName(ingredientName.toLowerCase(), userId);
 			
 			if (!ingredient.isEmpty()) {
 				return new ResponseEntity<>("Ingredient already exists", HttpStatus.OK);
@@ -50,7 +50,7 @@ public class IngredientServiceImpl implements IngredientService {
 			Date dateobj = new Date();
 
 			Ingredient newIngredient = new Ingredient();
-			newIngredient.setIngredientName(ingredientName);
+			newIngredient.setIngredientName(ingredientName.toLowerCase());
 			newIngredient.setUserId(userId);
 			newIngredient.setDate(dateobj);
 
@@ -101,19 +101,34 @@ public class IngredientServiceImpl implements IngredientService {
 		
 		for (Concept ingredient : retrievedIngredients) {
 			if (ingredient.value() > 0.95) {
+				List<Ingredient> existingIngredient = findUserIngredientsByName(ingredient.name().toLowerCase(), userId);
+				
+				if (!existingIngredient.isEmpty()) {
+					return new ResponseEntity<>("Ingredient already exists", HttpStatus.OK);
+				}
+				
 				Date dateobj = new Date();
 
 				Ingredient newIngredient = new Ingredient();
-				newIngredient.setIngredientName(ingredient.name());
+				newIngredient.setIngredientName(ingredient.name().toLowerCase());
 				newIngredient.setUserId(userId);
 				newIngredient.setDate(dateobj);
 
-				// TODO: there should be no ingredient that is the same for each user. Right now if ingredient exists, it is overrided
+				
 				ingredientRepo.save(newIngredient);
 				validIngredients.add(newIngredient);
 			}
 		}
 		
 		return new ResponseEntity<>(gson.toJson(validIngredients), HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<?> removeIngredredientByName(String ingredientName) {
+		ResponseEntity<?> response = getIngredientByName(ingredientName.toLowerCase());
+		Ingredient ingredient = gson.fromJson(response.getBody().toString(), Ingredient.class);
+		ingredientRepo.delete(ingredient);
+		
+		return new ResponseEntity<>("Ingredient deleted", HttpStatus.OK);
 	}
 }

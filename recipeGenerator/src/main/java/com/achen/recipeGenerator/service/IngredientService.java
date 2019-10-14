@@ -20,4 +20,6 @@ public interface IngredientService {
 	public ResponseEntity<?> addIngredientFromImage(ImageRequestDto imageProp, String userId);
 
 	public List<Ingredient> findUserIngredientsByName(String ingredientName, String userId);
+	
+	public ResponseEntity<?> removeIngredredientByName(String ingredientName);
 }

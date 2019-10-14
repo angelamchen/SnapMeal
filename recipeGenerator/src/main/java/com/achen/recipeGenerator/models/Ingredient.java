@@ -20,7 +20,7 @@ public class Ingredient {
 	String userId;
 	
 	Date date;
-
+	
 	public String getIngredientName() {
 		return ingredientName;
 	}
@@ -45,5 +45,9 @@ public class Ingredient {
 		this.date = date;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "Ingredient [ingredientId=" + ingredientId + ", ingredientName=" + ingredientName + ", userId=" + userId
+				+ ", date=" + date + "]";
+	}
 }
