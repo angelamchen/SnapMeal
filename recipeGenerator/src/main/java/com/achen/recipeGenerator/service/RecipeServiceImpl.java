@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.achen.recipeGenerator.models.Ingredient;
 import com.achen.recipeGenerator.models.Recipe;
-import com.achen.recipeGenerator.models.RecipeDto;
+import com.achen.recipeGenerator.models.Dto.RecipeDto;
 import com.achen.recipeGenerator.repositories.RecipeRepo;
 
 @Service("recipeService")

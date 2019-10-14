@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.achen.recipeGenerator.models.RecipeDto;
+import com.achen.recipeGenerator.models.Dto.RecipeDto;
 import com.achen.recipeGenerator.service.RecipeService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

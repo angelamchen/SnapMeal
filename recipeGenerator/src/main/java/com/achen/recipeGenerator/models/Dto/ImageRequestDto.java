@@ -1,4 +1,4 @@
-package com.achen.recipeGenerator.models;
+package com.achen.recipeGenerator.models.Dto;
 
 public class ImageRequestDto {
 	String imageString;

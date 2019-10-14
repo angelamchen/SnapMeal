@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.achen.recipeGenerator.models.ImageRequestDto;
 import com.achen.recipeGenerator.models.Ingredient;
+import com.achen.recipeGenerator.models.Dto.ImageRequestDto;
 import com.achen.recipeGenerator.service.IngredientService;
 
 @RestController
@@ -22,16 +22,6 @@ import com.achen.recipeGenerator.service.IngredientService;
 public class IngredientController {
 	@Autowired
 	private IngredientService ingredientService;
-
-	@RequestMapping(value = "/ingredient", method = RequestMethod.GET)
-	public ResponseEntity<?> getIngredientByName(@RequestParam String ingredientName) {
-		try {
-			Ingredient ingredient = ingredientService.getIngredientByName(ingredientName);
-			return new ResponseEntity<Ingredient>(ingredient, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
 
 	@CrossOrigin
 	@RequestMapping(value = "/UserIngredient", method = RequestMethod.GET)
@@ -49,8 +39,15 @@ public class IngredientController {
 	public ResponseEntity<?> addIngredientsText(@PathVariable("ingredientName") String ingredientName,
 			@PathVariable("userId") String userId) {
 		try {
+			if (ingredientService.doesIngredientExist(ingredientName, userId)) {
+				return new ResponseEntity<>(
+						String.format("Ingredient: %s for user: %s already exists", ingredientName, userId),
+						HttpStatus.BAD_REQUEST);
+			}
+			
 			Ingredient ingredient = ingredientService.saveNewIngredient(ingredientName, userId);
 			return new ResponseEntity<Ingredient>(ingredient, HttpStatus.CREATED);
+			
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -68,10 +65,10 @@ public class IngredientController {
 	}
 
 	@CrossOrigin
-	@RequestMapping(value = "/{ingredientName}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> removeIngredredientByName(@PathVariable String ingredientName) {
+	@RequestMapping(value = "/{ingredientName}/{userId}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> removeIngredredientByName(@PathVariable String ingredientName, @PathVariable String userId) {
 		try {
-			Ingredient ingredient = ingredientService.removeIngredredientByName(ingredientName);
+			Ingredient ingredient = ingredientService.removeIngredredientByNameAndUser(ingredientName, userId);
 			return new ResponseEntity<Ingredient>(ingredient, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

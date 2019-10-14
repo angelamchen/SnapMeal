@@ -5,107 +5,120 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.achen.recipeGenerator.models.ImageRequestDto;
 import com.achen.recipeGenerator.models.Ingredient;
+import com.achen.recipeGenerator.models.Dto.ImageRequestDto;
 import com.achen.recipeGenerator.repositories.IngredientRepo;
 
-import clarifai2.api.ClarifaiBuilder;
-import clarifai2.api.ClarifaiClient;
-import clarifai2.api.request.model.PredictRequest;
-import clarifai2.dto.input.ClarifaiInput;
-import clarifai2.dto.model.Model;
-import clarifai2.dto.model.output.ClarifaiOutput;
 import clarifai2.dto.prediction.Concept;
-import okhttp3.OkHttpClient;
 
 @Service("ingredientService")
 public class IngredientServiceImpl implements IngredientService {
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(IngredientServiceImpl.class);
 
 	@Autowired
 	IngredientRepo ingredientRepo;
-	
+
 	@Autowired
 	ClarifaiRecognitionService clarifaiClient;
-	
-	
+
+	/**
+	 * Saves ingredients to the ingredient database, given that ingredient does not
+	 * already exists for user
+	 * 
+	 * @param ingredientName Name of the ingredient to save
+	 * @param userId         userId of the user the ingredient belongs to
+	 * @return saved new ingredient object
+	 */
 	@Override
 	public Ingredient saveNewIngredient(String ingredientName, String userId) {
-			List<Ingredient> ingredient = getIngredientByNameAndUser(ingredientName.toLowerCase(), userId);
-			
-			if (!ingredient.isEmpty()) {
-				// TODO: create own exception and throw personalized exception
-			}
-			
-			Date dateobj = new Date();
+		Date dateobj = new Date();
 
-			Ingredient newIngredient = new Ingredient();
-			newIngredient.setIngredientName(ingredientName.toLowerCase());
-			newIngredient.setUserId(userId);
-			newIngredient.setDate(dateobj);
+		Ingredient newIngredient = new Ingredient();
+		newIngredient.setIngredientName(ingredientName.toLowerCase());
+		newIngredient.setUserId(userId);
+		newIngredient.setDate(dateobj);
 
-			ingredientRepo.save(newIngredient);
+		ingredientRepo.save(newIngredient);
 
-			return newIngredient;
+		return newIngredient;
 	}
-	
+
+	/**
+	 * Saves ingredients to the ingredient database from base64 image string, given
+	 * that the ingredients do not already exists for user
+	 * 
+	 * @param imageProp base64 byte string of image to analyze
+	 * @param userId    userId of the user the ingredients in image belong to
+	 * @return saved new ingredient object
+	 */
 	@Override
 	public List<Ingredient> saveIngredientFromImage(ImageRequestDto imageProp, String userId) {
-		byte[] imageBytes = Base64.getDecoder().decode(imageProp.getImageString());
-		
-		List<Concept> retrievedIngredients = clarifaiClient.sendImageToClarifaiSync(imageBytes);
-		
+		final double MATCH_PERCENTAGE = 0.95;
 		List<Ingredient> validIngredients = new ArrayList<>();
-		
+
+		byte[] imageBytes = Base64.getDecoder().decode(imageProp.getImageString());
+
+		List<Concept> retrievedIngredients = clarifaiClient.sendImageToClarifaiSync(imageBytes);
+
 		for (Concept ingredient : retrievedIngredients) {
-			if (ingredient.value() > 0.95) {
-				List<Ingredient> existingIngredient = getIngredientByNameAndUser(ingredient.name().toLowerCase(), userId);
-				
-				if (!existingIngredient.isEmpty()) {
-					continue;
-				}
-				
+			// If the match is greater than 0.95 and ingredient does not already exist, add to db
+			if (ingredient.value() > MATCH_PERCENTAGE && !doesIngredientExist(ingredient.name(), userId)) {
 				Ingredient newIngredient = saveNewIngredient(ingredient.name(), userId);
 				validIngredients.add(newIngredient);
 			}
 		}
-		
+
 		return validIngredients;
 	}
-	
-	@Override
-	public Ingredient getIngredientByName(String name) {
-		List<Ingredient> ingredients = ingredientRepo.findAllByName(name);
 
-		if (ingredients.size() != 1) {
-			// error that none or too much are found
-		}
-		return ingredients.get(0);
-	}
-	
+	/**
+	 * Retrieves a users ingredients from the ingredient database
+	 * 
+	 * @param userId string id of the user ingredients belong to
+	 * @return list of all the ingredients belong to the user
+	 */
 	@Override
 	public List<Ingredient> getAllIngredientsByUser(String userId) {
-			List<Ingredient> ingredients = ingredientRepo.findAllByUserId(userId);
-			return ingredients;
+		return ingredientRepo.findAllByUserId(userId);
 	}
-	
+		
+	/**
+	 * Removes a users ingredient in the ingredient database
+	 * 
+	 * @param ingredientName name of the ingredient to be removed
+	 * @param userId id of the user ingredients belong to
+	 * @return ingredient that was deleted
+	 * @throws Exception if ingredient does not exist
+	 */
 	@Override
-	public List<Ingredient> getIngredientByNameAndUser(String ingredientName, String userId) {
-		return ingredientRepo.findByIngredientNameAndUserId(ingredientName, userId);
+	public Ingredient removeIngredredientByNameAndUser(String ingredientName, String userId) throws Exception {
+		List<Ingredient> ingredients = ingredientRepo.findByIngredientNameAndUserId(ingredientName, userId);
+		
+		if (ingredients.isEmpty()) {
+			throw new Exception(String.format("Ingredient: %s for user: %s does not exist", ingredientName, userId));
+		}
+		
+		ingredientRepo.delete(ingredients.get(0));
+		return ingredients.get(0);
 	}
 
+	/**
+	 * Determines if a user ingredient exists
+	 * 
+	 * @param ingredientName name of the ingredient
+	 * @param userId id of the user ingredient belongs to
+	 * @return true, if only one ingredient exists
+	 * @return false, if ingredient does not exist, or if many exist
+	 */
 	@Override
-	public Ingredient removeIngredredientByName(String ingredientName) {
-		Ingredient ingredient = getIngredientByName(ingredientName.toLowerCase());
-		ingredientRepo.delete(ingredient);
+	public Boolean doesIngredientExist(String ingredientName, String userId) {
+		List<Ingredient> ingredients = ingredientRepo.findByIngredientNameAndUserId(ingredientName, userId);
 		
-		return ingredient;
+		if (ingredients.size() != 1) {
+			return false;
+		} 
+		return true;
 	}
 }
