@@ -22,34 +22,59 @@ import com.achen.recipeGenerator.service.IngredientService;
 public class IngredientController {
 	@Autowired
 	private IngredientService ingredientService;
-	
-	@RequestMapping(value="/ingredient", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/ingredient", method = RequestMethod.GET)
 	public ResponseEntity<?> getIngredientByName(@RequestParam String ingredientName) {
-		return ingredientService.getIngredientByName(ingredientName);
+		try {
+			Ingredient ingredient = ingredientService.getIngredientByName(ingredientName);
+			return new ResponseEntity<Ingredient>(ingredient, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
-	
+
 	@CrossOrigin
-	@RequestMapping(value="/UserIngredient", method = RequestMethod.GET)
+	@RequestMapping(value = "/UserIngredient", method = RequestMethod.GET)
 	public ResponseEntity<?> getAllIngredientsByUser(@RequestParam String userId) {
-		List<Ingredient> ingredients = ingredientService.getAllIngredientsByUser(userId);
-		return new ResponseEntity<>(ingredients, HttpStatus.OK);
+		try {
+			List<Ingredient> ingredients = ingredientService.getAllIngredientsByUser(userId);
+			return new ResponseEntity<List<Ingredient>>(ingredients, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
-	
+
 	@CrossOrigin
-	@RequestMapping(value="/{ingredientName}/{userId}", method = RequestMethod.POST)
-	public ResponseEntity<?> addIngredientsText(@PathVariable("ingredientName") String ingredientName, @PathVariable("userId") String userId) {
-		return ingredientService.addIngredientFromText(ingredientName, userId);
+	@RequestMapping(value = "/{ingredientName}/{userId}", method = RequestMethod.POST)
+	public ResponseEntity<?> addIngredientsText(@PathVariable("ingredientName") String ingredientName,
+			@PathVariable("userId") String userId) {
+		try {
+			Ingredient ingredient = ingredientService.saveNewIngredient(ingredientName, userId);
+			return new ResponseEntity<Ingredient>(ingredient, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
-	
+
 	@CrossOrigin
-	@RequestMapping(value="/{userId}", method = RequestMethod.POST)
+	@RequestMapping(value = "/{userId}", method = RequestMethod.POST)
 	public ResponseEntity<?> addIngredientImage(@RequestBody ImageRequestDto imageProp, @PathVariable String userId) {
-		return ingredientService.addIngredientFromImage(imageProp, userId);
+		try {
+			List<Ingredient> ingredients = ingredientService.saveIngredientFromImage(imageProp, userId);
+			return new ResponseEntity<List<Ingredient>>(ingredients, HttpStatus.CREATED);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
-	
+
 	@CrossOrigin
-	@RequestMapping(value="/{ingredientName}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{ingredientName}", method = RequestMethod.DELETE)
 	public ResponseEntity<?> removeIngredredientByName(@PathVariable String ingredientName) {
-		return ingredientService.removeIngredredientByName(ingredientName);
+		try {
+			Ingredient ingredient = ingredientService.removeIngredredientByName(ingredientName);
+			return new ResponseEntity<Ingredient>(ingredient, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

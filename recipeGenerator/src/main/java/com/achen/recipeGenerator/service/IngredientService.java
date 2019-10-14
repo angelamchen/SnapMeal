@@ -2,7 +2,6 @@ package com.achen.recipeGenerator.service;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.achen.recipeGenerator.models.ImageRequestDto;
@@ -11,15 +10,15 @@ import com.achen.recipeGenerator.models.Ingredient;
 @Service("ingredientService")
 public interface IngredientService {
 
-	public ResponseEntity<?> getIngredientByName(String ingredientName);
+	public Ingredient getIngredientByName(String ingredientName);
 
 	public List<Ingredient> getAllIngredientsByUser(String userId);
 	
-	public ResponseEntity<?> addIngredientFromText(String ingredientName, String userId);
-
-	public ResponseEntity<?> addIngredientFromImage(ImageRequestDto imageProp, String userId);
-
-	public List<Ingredient> findUserIngredientsByName(String ingredientName, String userId);
+	public List<Ingredient> getIngredientByNameAndUser(String ingredientName, String userId);
 	
-	public ResponseEntity<?> removeIngredredientByName(String ingredientName);
+	public Ingredient saveNewIngredient(String ingredientName, String userId);
+
+	public List<Ingredient> saveIngredientFromImage(ImageRequestDto imageProp, String userId);
+
+	public Ingredient removeIngredredientByName(String ingredientName);
 }

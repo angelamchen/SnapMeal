@@ -5,62 +5,40 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.achen.recipeGenerator.models.Ingredient;
 import com.achen.recipeGenerator.models.Recipe;
 import com.achen.recipeGenerator.models.RecipeDto;
 import com.achen.recipeGenerator.repositories.RecipeRepo;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 @Service("recipeService")
 public class RecipeServiceImpl implements RecipeService {
-	private Gson gson = new GsonBuilder().create();
 
-	// TODO: Maybe should not return response entities, rather let the controllers
-	// handle HTTP requests and services
-	// handle bus logic
 	@Autowired
 	RecipeRepo recipeRepo;
 
 	@Autowired
 	IngredientService ingredientService;
 
-	@Override
-	public ResponseEntity<?> getRecipeFromTitle(String title) {
-		List<Recipe> recipes = recipeRepo.findAllByTitle(title);
-
-		if (recipes.size() != 1) {
-			return new ResponseEntity<>(String.format("Could not find: %s", title), HttpStatus.BAD_REQUEST);
-		}
-		return new ResponseEntity<>(gson.toJson(recipes.get(0)), HttpStatus.OK);
-	}
-
+	// TODO: make this more graceful
 	@Override
 	public String deleteStuff() {
-		try {
-			System.out.println("I ran");
-			List<Recipe> recipe = recipeRepo.deleteBadRecipes();
-			System.out.println(recipe.size());
+		List<Recipe> recipe = recipeRepo.deleteBadRecipes();
+		System.out.println(recipe.size());
 
-			for (Recipe recipe2 : recipe) {
-				recipeRepo.deleteRecipeByTitle(recipe2.getTitle());
-			}
-
-			return "Success";
-		} catch (Exception e) {
-			return "I failed" + e.toString();
+		for (Recipe recipe2 : recipe) {
+			recipeRepo.deleteRecipeByTitle(recipe2.getTitle());
 		}
 
+		return "Success";
 	}
 
 	@Override
 	public List<RecipeDto> getAvailableRecipes(String userId) {
 		List<RecipeDto> matchedRecipes = new ArrayList<>();
 		HashSet<String> matchedRecipeNames = new HashSet<>();
+		
 		List<Ingredient> userIngredients = ingredientService.getAllIngredientsByUser(userId);
 
 		for (Ingredient ingredient : userIngredients) {

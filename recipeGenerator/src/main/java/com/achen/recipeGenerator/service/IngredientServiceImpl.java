@@ -5,16 +5,15 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.achen.recipeGenerator.models.ImageRequestDto;
 import com.achen.recipeGenerator.models.Ingredient;
 import com.achen.recipeGenerator.repositories.IngredientRepo;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import clarifai2.api.ClarifaiBuilder;
 import clarifai2.api.ClarifaiClient;
@@ -27,24 +26,22 @@ import okhttp3.OkHttpClient;
 
 @Service("ingredientService")
 public class IngredientServiceImpl implements IngredientService {
-	private Gson gson = new GsonBuilder().create();
 	
-	final ClarifaiClient client = new ClarifaiBuilder("1100f3670e8f45c78bfaffec39c36deb")
-			.client(new OkHttpClient()) // OPTIONAL. Allows customization of OkHttp by the user
-			.buildSync(); // or use .build() to get a Future<ClarifaiClient>
+	private static final Logger LOGGER = LoggerFactory.getLogger(IngredientServiceImpl.class);
 
 	@Autowired
 	IngredientRepo ingredientRepo;
-
-	// This should not be a response Entity...
+	
+	@Autowired
+	ClarifaiRecognitionService clarifaiClient;
+	
+	
 	@Override
-	public ResponseEntity<?> addIngredientFromText(String ingredientName, String userId) {
-		try {
-			
-			List<Ingredient> ingredient = findUserIngredientsByName(ingredientName.toLowerCase(), userId);
+	public Ingredient saveNewIngredient(String ingredientName, String userId) {
+			List<Ingredient> ingredient = getIngredientByNameAndUser(ingredientName.toLowerCase(), userId);
 			
 			if (!ingredient.isEmpty()) {
-				return new ResponseEntity<>("Ingredient already exists", HttpStatus.OK);
+				// TODO: create own exception and throw personalized exception
 			}
 			
 			Date dateobj = new Date();
@@ -56,30 +53,43 @@ public class IngredientServiceImpl implements IngredientService {
 
 			ingredientRepo.save(newIngredient);
 
-			return new ResponseEntity<>(String.format("Ingredient %s saved", newIngredient), HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(e.toString(), HttpStatus.BAD_REQUEST);
+			return newIngredient;
+	}
+	
+	@Override
+	public List<Ingredient> saveIngredientFromImage(ImageRequestDto imageProp, String userId) {
+		byte[] imageBytes = Base64.getDecoder().decode(imageProp.getImageString());
+		
+		List<Concept> retrievedIngredients = clarifaiClient.sendImageToClarifaiSync(imageBytes);
+		
+		List<Ingredient> validIngredients = new ArrayList<>();
+		
+		for (Concept ingredient : retrievedIngredients) {
+			if (ingredient.value() > 0.95) {
+				List<Ingredient> existingIngredient = getIngredientByNameAndUser(ingredient.name().toLowerCase(), userId);
+				
+				if (!existingIngredient.isEmpty()) {
+					continue;
+				}
+				
+				Ingredient newIngredient = saveNewIngredient(ingredient.name(), userId);
+				validIngredients.add(newIngredient);
+			}
 		}
+		
+		return validIngredients;
 	}
 	
-	//TODO: implement add ingredient
-	
 	@Override
-	public List<Ingredient> findUserIngredientsByName(String ingredientName, String userId) {
-		return ingredientRepo.findByIngredientNameAndUserId(ingredientName, userId);
-	}
-
-	@Override
-	public ResponseEntity<?> getIngredientByName(String name) {
+	public Ingredient getIngredientByName(String name) {
 		List<Ingredient> ingredients = ingredientRepo.findAllByName(name);
 
 		if (ingredients.size() != 1) {
 			// error that none or too much are found
-			return new ResponseEntity<>(String.format("Could not find: %s", name), HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<>(gson.toJson(ingredients.get(0)), HttpStatus.OK);
+		return ingredients.get(0);
 	}
-
+	
 	@Override
 	public List<Ingredient> getAllIngredientsByUser(String userId) {
 			List<Ingredient> ingredients = ingredientRepo.findAllByUserId(userId);
@@ -87,48 +97,15 @@ public class IngredientServiceImpl implements IngredientService {
 	}
 	
 	@Override
-	public ResponseEntity<?> addIngredientFromImage(ImageRequestDto imageProp, String userId) {
-		byte[] imageBytes = Base64.getDecoder().decode(imageProp.getImageString());
-		
-		Model<Concept> foodModel = client.getDefaultModels().foodModel();
-
-		PredictRequest<Concept> request = foodModel.predict().withInputs(
-		        ClarifaiInput.forImage(imageBytes));
-		List<ClarifaiOutput<Concept>> results = request.executeSync().get();
-		
-		List<Concept> retrievedIngredients = results.get(0).data();
-		List<Ingredient> validIngredients = new ArrayList<>();
-		
-		for (Concept ingredient : retrievedIngredients) {
-			if (ingredient.value() > 0.95) {
-				List<Ingredient> existingIngredient = findUserIngredientsByName(ingredient.name().toLowerCase(), userId);
-				
-				if (!existingIngredient.isEmpty()) {
-					return new ResponseEntity<>("Ingredient already exists", HttpStatus.OK);
-				}
-				
-				Date dateobj = new Date();
-
-				Ingredient newIngredient = new Ingredient();
-				newIngredient.setIngredientName(ingredient.name().toLowerCase());
-				newIngredient.setUserId(userId);
-				newIngredient.setDate(dateobj);
-
-				
-				ingredientRepo.save(newIngredient);
-				validIngredients.add(newIngredient);
-			}
-		}
-		
-		return new ResponseEntity<>(gson.toJson(validIngredients), HttpStatus.OK);
+	public List<Ingredient> getIngredientByNameAndUser(String ingredientName, String userId) {
+		return ingredientRepo.findByIngredientNameAndUserId(ingredientName, userId);
 	}
 
 	@Override
-	public ResponseEntity<?> removeIngredredientByName(String ingredientName) {
-		ResponseEntity<?> response = getIngredientByName(ingredientName.toLowerCase());
-		Ingredient ingredient = gson.fromJson(response.getBody().toString(), Ingredient.class);
+	public Ingredient removeIngredredientByName(String ingredientName) {
+		Ingredient ingredient = getIngredientByName(ingredientName.toLowerCase());
 		ingredientRepo.delete(ingredient);
 		
-		return new ResponseEntity<>("Ingredient deleted", HttpStatus.OK);
+		return ingredient;
 	}
 }
