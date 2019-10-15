@@ -64,7 +64,6 @@ public class IngredientServiceImpl implements IngredientService {
 		for (Concept ingredient : retrievedIngredients) {
 			// If the match is greater than 0.95 and ingredient does not already exist, add
 			// to db
-			System.out.println(ingredient.name() + ": " + ingredient.value());
 			if (ingredient.value() > MATCH_PERCENTAGE && !doesIngredientExist(ingredient.name(), userId)) {
 				Ingredient newIngredient = saveNewIngredient(ingredient.name(), userId);
 				validIngredients.add(newIngredient);

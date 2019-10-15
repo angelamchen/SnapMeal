@@ -60,7 +60,6 @@ public class RecipeServiceTest {
 		
 		// Act
 		double match = mockRecipeServiceImpl.findMatchPercentage(recipeIngredients, ingredients);
-		System.out.println(match);
 		
 		// Assert
 		assertTrue(match < 0.84);
