@@ -95,7 +95,7 @@ public class IngredientServiceImpl implements IngredientService {
 	 */
 	@Override
 	public Ingredient removeIngredredientByNameAndUser(String ingredientName, String userId) throws Exception {
-		List<Ingredient> ingredients = ingredientRepo.findByIngredientNameAndUserId(ingredientName, userId);
+		List<Ingredient> ingredients = ingredientRepo.findByIngredientNameAndUserId(ingredientName.toLowerCase(), userId);
 
 		if (ingredients.isEmpty()) {
 			throw new Exception(String.format("Ingredient: %s for user: %s does not exist", ingredientName, userId));
