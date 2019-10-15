@@ -60,6 +60,7 @@ public class RecipeServiceTest {
 		
 		// Act
 		double match = mockRecipeServiceImpl.findMatchPercentage(recipeIngredients, ingredients);
+		System.out.println(match);
 		
 		// Assert
 		assertTrue(match < 0.84);
@@ -211,4 +212,12 @@ public class RecipeServiceTest {
 		assertEquals(0, matchedRecipes.size());
 	}
 	
+	@Test
+	public void regexMatcher() {
+		String pattern = "[^a-z]?.*(parsley)[^a-r|t-z]?.*";
+		String instructions = "3 tablespoons chopped fresh parsley";
+		boolean isMatch = instructions.matches(pattern);
+		
+		assertTrue(isMatch);
+	}
 }

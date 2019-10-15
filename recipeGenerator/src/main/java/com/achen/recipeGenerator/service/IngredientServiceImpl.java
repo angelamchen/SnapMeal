@@ -54,7 +54,7 @@ public class IngredientServiceImpl implements IngredientService {
 	 */
 	@Override
 	public List<Ingredient> saveIngredientFromImage(ImageRequestDto imageProp, String userId) {
-		final double MATCH_PERCENTAGE = 0.95;
+		final double MATCH_PERCENTAGE = 0.96;
 		List<Ingredient> validIngredients = new ArrayList<>();
 
 		byte[] imageBytes = Base64.getDecoder().decode(imageProp.getImageString());
@@ -64,6 +64,7 @@ public class IngredientServiceImpl implements IngredientService {
 		for (Concept ingredient : retrievedIngredients) {
 			// If the match is greater than 0.95 and ingredient does not already exist, add
 			// to db
+			System.out.println(ingredient.name() + ": " + ingredient.value());
 			if (ingredient.value() > MATCH_PERCENTAGE && !doesIngredientExist(ingredient.name(), userId)) {
 				Ingredient newIngredient = saveNewIngredient(ingredient.name(), userId);
 				validIngredients.add(newIngredient);

@@ -50,6 +50,7 @@ public class RecipeServiceImpl implements RecipeService {
 	 */
 	@Override
 	public List<RecipeDto> getAvailableRecipes(String userId) {
+		final double MATCH_PERCENTAGE = 0.5;
 		List<RecipeDto> matchedRecipes = new ArrayList<>();
 		HashSet<String> matchedRecipeNames = new HashSet<>();
 
@@ -77,7 +78,7 @@ public class RecipeServiceImpl implements RecipeService {
 
 				double percentageMatch = findMatchPercentage(recipe.getIngredients(), userIngredients);
 
-				if (percentageMatch > 0.5) {
+				if (percentageMatch > MATCH_PERCENTAGE) {
 					RecipeDto matchedRecipe = new RecipeDto();
 					matchedRecipe.setTitle(recipe.getTitle());
 					matchedRecipe.setDirections(recipe.getDirections());
@@ -124,8 +125,12 @@ public class RecipeServiceImpl implements RecipeService {
 	 * @returns true if the user has the ingredient, false otherwise
 	 */
 	private boolean doesUserHaveIngredient(String recipeIngredient, List<Ingredient> userIngredients) {
+		final String regex = "[^a-z]?.*(%s)[^a-r|t-z]?.*";
+		
 		for (Ingredient ingredient : userIngredients) {
-			if (recipeIngredient.contains(ingredient.getIngredientName())) {
+			String pattern = String.format(regex, ingredient.getIngredientName());
+			
+			if (recipeIngredient.matches(pattern)) {
 				return true;
 			}
 		}
