@@ -14,7 +14,7 @@ add the ingredients identified if the match is above 95%. This generated list of
 Backend: [Spring Boot](https://spring.io/projects/spring-boot)\
 Frontend: [React](https://reactjs.org/) and bootstraped using [create-react-app](https://reactjs.org/docs/create-a-new-react-app.html)\
 Database: [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)\
-Computer Vision: [Clarifai Food Model](https://www.clarifai.com/models/food)\
+Computer Vision: [Clarifai Food Model](https://www.clarifai.com/models/food)
 
 Recipes taken from [Epicurious](https://www.kaggle.com/hugodarwood/epirecipes) Kaggle dataset
 
