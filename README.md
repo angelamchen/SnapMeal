@@ -10,7 +10,7 @@ Each user has their individual list of current ingredients. From the [React fron
 the user can add to their list by manually creating ingredients or capturing an image of their fridge. The application then uses computer vision to
 add the ingredients identified if the match is above 95%. This generated list of ingredients is used to determine possible recipes the user can cook.
 
-🖌 View the high-level design [here](https://github.com/angelamchen/SnapMeal/blob/master/snapmeal_design.png)!   
+🖌 View the high-level design [here](https://github.com/angelamchen/SnapMeal/blob/master/snapmeal_design_diagram.pdf)!   
 
 ## 💻 Tech Stack
 Backend: [Spring Boot](https://spring.io/projects/spring-boot)\
