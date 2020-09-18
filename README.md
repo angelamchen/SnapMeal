@@ -1,6 +1,6 @@
 # 👩‍🍳 SnapMeal  🍽
 <p align="center">
-   <img alt="SnapMeal Logo" src="./readme-logo.ico" width="100" />
+   <img alt="SnapMeal Logo" src="./logo.ico" width="100" />
 </p>
 
 SnapMeal will help you determine recipes you can make based off an image of your fridge. With over 10,000 unique recipes, 
