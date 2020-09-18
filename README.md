@@ -1,8 +1,8 @@
-# 👩‍🍳 SnapMeal  🍽
 <p align="center">
    <img alt="SnapMeal Logo" src="./logo.ico" width="100" />
 </p>
 
+# 👩‍🍳 SnapMeal  🍽
 SnapMeal will help you determine recipes you can make based off an image of your fridge. With over 10,000 unique recipes, 
 SnapMeal uses computer vision to recognize the groceries you currently own to find the best match you can currently make.
 
